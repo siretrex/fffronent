@@ -1,160 +1,129 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { Trophy, Medal } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../features/auth/authSlice";
 import BaseURl from "../BaseURl";
 
-const Leaderboard = () => {
-  const [teams, setTeams] = useState([]);
-  const [loading, setLoading] = useState(true);
+const LoginUser = () => {
+  const dispatch = useDispatch();
 
-  // 🛑 Add banned team names here (case-insensitive)
-  const bannedTeams = ["YouTube x", "Alpha7Gaming", "ToxicPro"]; // example names
-
-  useEffect(() => {
-    const fetchLeaderboard = async () => {
-      try {
-        const res = await axios.get(`${BaseURl}/teams`);
-        setTeams(res.data || []);
-      } catch (err) {
-        console.error("Error fetching leaderboard:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchLeaderboard();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-900 text-white">
-        <p className="text-lg animate-pulse">Loading leaderboard...</p>
-      </div>
-    );
-  }
-
-  if (!teams.length) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-900 text-gray-400">
-        <p>No teams registered yet 🥲</p>
-      </div>
-    );
-  }
-
-  // ✅ Calculate total = placement_points + kills
-  const teamsWithTotal = teams.map((team) => {
-    const isBanned = bannedTeams.some(
-      (ban) => ban.toLowerCase() === team.team_name.toLowerCase()
-    );
-
-    return {
-      ...team,
-      isBanned,
-      total: isBanned
-        ? 0
-        : (team.placement_points || 0) + (team.kills || 0),
-    };
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [message, setMessage] = useState("");
 
-  // ✅ Separate banned and normal teams
-  const bannedList = teamsWithTotal.filter((t) => t.isBanned);
-  const normalList = teamsWithTotal
-    .filter((t) => !t.isBanned)
-    .sort((a, b) => b.total - a.total);
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-  // ✅ Combine: banned first, then ranked teams
-  const finalList = [...bannedList, ...normalList];
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage("");
 
-  // 🥇 Medal colors for top 3
-  const medalColors = ["text-yellow-400", "text-gray-300", "text-amber-700"];
+    try {
+      const res = await axios.post(`${BaseURl}/login`, formData);
+
+      dispatch(loginSuccess({ user: res.data.user, token: res.data.token }));
+      setMessage("✅ Login successful! Redirecting...");
+      setFormData({ email: "", password: "" });
+
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1500);
+    } catch (err) {
+      setMessage(
+        err.response?.data?.message || "❌ Invalid credentials. Please try again."
+      );
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-yellow-400 flex items-center justify-center gap-2">
-            <Trophy className="text-yellow-400" /> Tournament Leaderboard
-          </h1>
-          <p className="text-gray-400 mt-2 text-sm sm:text-base">
-            {finalList[0]?.tournament_name || "Tournament"} 🏆
-          </p>
-        </div>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-black via-[#0A0A0A] to-black text-white">
+      <div className="bg-[#111]/90 backdrop-blur-md border border-[#FF4D00]/40 rounded-2xl shadow-[0_0_30px_rgba(255,77,0,0.4)] w-full max-w-md p-8 sm:p-10">
+        <h2 className="text-3xl sm:text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-[#FF4D00] via-[#FFB800] to-[#00C2FF] drop-shadow-[0_0_20px_rgba(255,77,0,0.6)] mb-8">
+          Welcome Back 👋
+        </h2>
 
-        {/* ✅ Responsive Table Wrapper */}
-        <div className="bg-gray-800 rounded-2xl shadow-xl w-full overflow-x-auto">
-          <table className="min-w-[500px] w-full text-left text-sm sm:text-base">
-            <thead className="bg-gray-700 text-yellow-400 uppercase sticky top-0">
-              <tr>
-                <th className="px-4 py-3 text-center">Rank</th>
-                <th className="px-4 py-3">Team Name</th>
-                <th className="px-4 py-3 text-center">Total</th>
-                <th className="px-4 py-3 text-center">Placement</th>
-                <th className="px-4 py-3 text-center">Kills</th>
-              </tr>
-            </thead>
-            <tbody>
-              {finalList.map((team, index) => {
-                const isBanned = team.isBanned;
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-300 mb-2">
+              Email Address
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+              className="w-full p-3 rounded-lg bg-black border border-[#FF4D00]/40 text-white focus:ring-2 focus:ring-[#FFB800] outline-none placeholder-gray-500"
+              required
+            />
+          </div>
 
-                return (
-                  <tr
-                    key={team._id}
-                    className={`border-b border-gray-700 hover:bg-gray-700/60 transition ${
-                      index < 3 && !isBanned ? "bg-gray-700/30" : ""
-                    } ${isBanned ? "bg-red-900/30" : ""}`}
-                  >
-                    {/* Rank */}
-                    <td className="px-4 py-3 font-bold text-center whitespace-nowrap">
-                      {isBanned ? "❌" : index < bannedList.length + 3 ? (
-                        <Medal
-                          size={20}
-                          className={`${medalColors[index - bannedList.length] || ""} inline-block`}
-                        />
-                      ) : (
-                        `#${index - bannedList.length + 1}`
-                      )}
-                    </td>
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-300 mb-2">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                className="w-full p-3 rounded-lg bg-black border border-[#FF4D00]/40 text-white focus:ring-2 focus:ring-[#00C2FF] outline-none placeholder-gray-500"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 text-gray-400 hover:text-[#FFB800] transition"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+          </div>
 
-                    {/* Team name */}
-                    <td
-                      className={`px-4 py-3 font-semibold whitespace-nowrap ${
-                        isBanned ? "text-red-400" : ""
-                      }`}
-                    >
-                      {isBanned
-                        ? `(BANNED) ${team.team_name}`
-                        : team.team_name}
-                    </td>
+          {/* Message */}
+          {message && (
+            <p
+              className={`text-center font-medium mt-2 ${
+                message.includes("✅")
+                  ? "text-[#00FF9C]"
+                  : "text-[#FF4D00]"
+              }`}
+            >
+              {message}
+            </p>
+          )}
 
-                    {/* Total */}
-                    <td className="px-4 py-3 text-center font-bold text-green-400">
-                      {team.total}
-                    </td>
-
-                    {/* Placement */}
-                    <td className="px-4 py-3 text-center">
-                      {team.placement_points || 0}
-                    </td>
-
-                    {/* Kills */}
-                    <td className="px-4 py-3 text-center">
-                      {team.kills || 0}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-[#FF4D00] via-[#FFB800] to-[#00C2FF] text-black font-bold py-3 rounded-lg shadow-[0_0_20px_rgba(255,184,0,0.5)] hover:shadow-[0_0_25px_rgba(255,184,0,0.7)] transition-all"
+          >
+            Login
+          </button>
+        </form>
 
         {/* Footer */}
-        <div className="text-center text-gray-400 mt-6 text-xs sm:text-sm">
-          WarSky Season Cup 1
-        </div>
+        <p className="text-center mt-6 text-gray-400 text-sm">
+          Don’t have an account?{" "}
+          <a
+            href="/register"
+            className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF4D00] via-[#FFB800] to-[#00C2FF] hover:underline font-semibold"
+          >
+            Register
+          </a>
+        </p>
       </div>
     </div>
   );
 };
 
-export default Leaderboard;
+export default LoginUser;
