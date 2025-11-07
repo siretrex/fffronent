@@ -3,12 +3,14 @@ import { useLocation } from "react-router-dom";
 import { Copy, Check } from "lucide-react";
 import { useSelector } from "react-redux";
 import BaseURl from "../BaseURl";
+import QR_CODE_URL from "../assets/qr.jpg"
 
 const RegisterTeam = () => {
   const location = useLocation();
   const { tournament } = location.state || {};
   const tournamentId = tournament?._id || "";
   const entryFee = tournament?.entryFee || "Free";
+
 
   const user = useSelector((state) => state.auth.user);
   const userID = user?._id || null;
@@ -26,7 +28,6 @@ const RegisterTeam = () => {
 
   const [copied, setCopied] = useState(false);
   const UPI_ID = "yourupiid@upi";
-  const QR_CODE_URL = "/qr-code.png";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -192,7 +193,7 @@ const RegisterTeam = () => {
                 Pay entry fee via UPI: <strong className="text-yellow-400">{entryFee}</strong>
               </p>
               <div className="flex items-center justify-center space-x-2">
-                <span className="font-bold text-yellow-300">{UPI_ID}</span>
+                <span className="font-bold text-yellow-300">siretrex@ibl</span>
                 <button
                   type="button"
                   onClick={copyUPI}
