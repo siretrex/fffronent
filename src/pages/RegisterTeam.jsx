@@ -226,14 +226,14 @@ const RegisterTeam = () => {
 
         {/* Discord Section */}
         <div className="text-center space-y-2 mt-6">
-          <p className="text-sm text-gray-300">Send payment screenshot on Discord:</p>
+          <p className="text-sm text-gray-300">Send payment screenshot on Whatsapp:</p>
           <a
-            href="https://discordapp.com/users/YOUR_DISCORD_ID"
+            href="https://wa.me/917579351992"
             target="_blank"
             rel="noreferrer"
             className="w-full block py-3 bg-gradient-to-r from-indigo-500 to-purple-600 font-bold rounded-lg hover:opacity-90 transition"
           >
-            📩 Send Screenshot on Discord
+            📩 Send Screenshot on Whatsapp
           </a>
         </div>
 

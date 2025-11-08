@@ -114,7 +114,7 @@ const HeroPage = () => {
         {/* Floating Social Buttons */}
         <div className="fixed right-3 top-1/3 flex flex-col gap-3 z-50">
           <a
-            href="https://www.instagram.com/warsky_org?igsh=Y2k3dmk5dHF3dmNm"
+            href="https://www.instagram.com/warsky_ff?igsh=NGh4eWJjYTNuaXhr"
             target="_blank"
             rel="noopener noreferrer"
             className="bg-gradient-to-r from-[#FF007F] to-[#FF4D00] p-3 rounded-full shadow-lg hover:scale-110 transition"
@@ -122,7 +122,7 @@ const HeroPage = () => {
             <i className="fab fa-instagram text-white text-xl md:text-2xl"></i>
           </a>
           <a
-            href="https://youtube.com/@warskyesports?si=x1IDyLauAvdhveUb"
+            href="https://youtube.com/@warskyff?si=OqLFcaylqICCJ6Cp"
             target="_blank"
             rel="noopener noreferrer"
             className="bg-gradient-to-r from-[#FF0000] to-[#FF4D00] p-3 rounded-full shadow-lg hover:scale-110 transition"
@@ -130,7 +130,7 @@ const HeroPage = () => {
             <i className="fab fa-youtube text-white text-xl md:text-2xl"></i>
           </a>
           <a
-            href="https://wa.me/917579351992"
+            href="https://chat.whatsapp.com/BfFAztCzRaI5UcdLH5zcSn?mode=wwt"
             target="_blank"
             rel="noopener noreferrer"
             className="bg-gradient-to-r from-[#00C851] to-[#007E33] p-3 rounded-full shadow-lg hover:scale-110 transition"
